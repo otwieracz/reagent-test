@@ -1,34 +1,40 @@
 (ns test.main
   (:require ["react-bootstrap" :as bs]
             [reagent.core :as r]
+            [re-frame.core :as rf]
             [secretary.core :as secretary]
             [test.menu :as menu]
             [test.about :as about]
             [test.counter :as counter]
             [test.list :as listing]))
 
-(def app-state (r/atom {}))
+(defmulti current-page (fn [] @(rf/subscribe [:current-page])))
 
-(defmulti current-page #(@app-state :link-key))
+(rf/reg-event-fx :change-page
+                 (fn [{:keys [db]} [_ new-page]]
+                   {:db (merge db {:current-page new-page})}))
+
+(rf/reg-sub :current-page
+            (fn [db _] (or (:current-page db)
+                           :about)))
 
 (defn- bold-if-active
   "Depending on `LINK-KEY` being marked as currently active, return `TEXT` with `BOLD` tag around"
   [link-key text]
   (assert (keyword? link-key))
-  (if (= (:link-key @app-state) link-key)
+  (if (= @(rf/subscribe [:current-page]) link-key)
     [:b text]
     text))
 
 
 (secretary/defroute counter-page "/counter" []
-  (swap! app-state #(merge % {:link-key :counter})))
+  (rf/dispatch [:change-page :counter]))
 
 (defmethod current-page :counter []
-  [counter/page app-state])
-
+  [counter/page])
 
 (secretary/defroute about-page "/about" []
-  (swap! app-state #(merge % {:link-key :about})))
+  (rf/dispatch [:change-page :about]))
 
 (defmethod current-page :about []
   [about/page])
@@ -36,12 +42,11 @@
 (defmethod current-page :default []
   [about/page])
 
-
 (secretary/defroute list-page "/list" []
-  (swap! app-state #(merge % {:link-key :list})))
+  (rf/dispatch [:change-page :list]))
 
 (defmethod current-page :list []
-  [listing/page app-state])
+  [listing/page])
 
 
 (defn page []

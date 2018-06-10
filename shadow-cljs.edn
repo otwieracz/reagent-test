@@ -3,7 +3,8 @@
  :dependencies [[cider/cider-nrepl "0.17.0"]
                 [secretary "1.2.3"]
                 [venantius/accountant "0.2.4"]
-                [reagent "0.8.1"]]
+                [reagent "0.8.1"]
+                [re-frame "0.10.5"]]
  :builds {:app {:target :browser
                 :output-dir "public/js"
                 :asset-path "js"
