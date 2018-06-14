@@ -10,9 +10,9 @@
 
 (defmulti current-page (fn [] @(rf/subscribe [:current-page])))
 
-(rf/reg-event-fx :change-page
-                 (fn [{:keys [db]} [_ new-page]]
-                   {:db (merge db {:current-page new-page})}))
+(rf/reg-event-db :change-page
+                 (fn [db [_ new-page]]
+                   (merge db {:current-page new-page})))
 
 (rf/reg-sub :current-page
             (fn [db _] (or (:current-page db)

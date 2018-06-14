@@ -2,9 +2,9 @@
   (:require ["react-bootstrap" :as bs]
             [re-frame.core :as rf]))
 
-(rf/reg-event-fx :add-list-item
-                 (fn [{:keys [db]} [_ new-item]]
-                   {:db (update db :list-items conj new-item)}))
+(rf/reg-event-db :add-list-item
+                 (fn [db [_ new-item]]
+                   (update db :list-items conj new-item)))
 
 (rf/reg-sub :list-items
             (fn [db _] (:list-items db)))

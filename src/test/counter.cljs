@@ -2,9 +2,9 @@
   (:require ["react-bootstrap" :as bs]
             [re-frame.core :as rf]))
 
-(rf/reg-event-fx :change-counter
-                 (fn [{:keys [db]} [_ value]]
-                   {:db (update db :counter + value)}))
+(rf/reg-event-db :change-counter
+                 (fn [db [_ value]]
+                   (update db :counter + value)))
 
 (rf/reg-sub :counter-value
             (fn [db _] (or (:counter db) 0)))
